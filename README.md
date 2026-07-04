@@ -12,6 +12,7 @@ The project is split into two milestones:
 
 - **Milestone 1 — ETL & Normalization:** Data cleaning, deduplication, standardization, and schema design
 - **Milestone 2 — Analytics & Reporting:** Complex analytical queries answering real business questions
+- **Milestone 3 — Business Report:** Full written analysis of query results with data visualizations and actionable insights
 
 ---
 
@@ -62,9 +63,22 @@ Uses a **Common Table Expression (CTE)** to pre-aggregate expenses, then joins a
 
 ---
 
+## Milestone 3 — Business Report
+
+`Milestone_3_Business_Report.pdf` contains the complete writeup for the three analytical queries, including query logic explanations, result tables, and a data visualization (pie chart) for the elite runner demographics analysis.
+
+### Key Findings
+- **Chi-town Dash Marathon** generated the highest merchandise profit at $569K across 31,868 items sold
+- **California** produced the most elite marathon finishers nationally (788), with an average finish time of 155.98 minutes
+- **8 of 26 race events operated at a net loss** after expenses — identified using a CTE-based approach that prevented double-counting of expenses across roster joins
+
+These findings demonstrate how SQL-driven analysis can surface actionable business insights: which race brands deserve larger merchandise investment, which geographic markets attract elite runners, and which events need operational cost review.
+
+---
+
 ## Technologies Used
 - **Snowflake** — cloud data warehouse
-- **SQL** — DDL, DML, CTEs, window functions, aggregations, JOINs
+- **SQL** — DDL, DML, CTEs, window functions, aggregations, JOINs, subqueries
 
 ## Context
 - Course: Database Systems Development (MSIS 3333), Oklahoma State University
