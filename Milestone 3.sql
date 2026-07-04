@@ -1,0 +1,69 @@
+USE ROLE training_role;
+USE SCHEMA MSIS3333_MAIN.marathon_db;
+
+SELECT * FROM CITIES;
+SELECT * FROM EXPENSES;
+SELECT * FROM MERCHANDISE;
+SELECT * FROM RACES;
+SELECT * FROM RACE_EVENTS;
+SELECT * FROM RACE_ROSTER;
+SELECT * FROM RUNNERS;
+SELECT * FROM RUNNER_PURCHASES;
+SELECT * FROM WEATHER;
+
+/* Merchandise Profitability per Race
+
+> Which individual races generated the highest total profit from merchandise sales, and how does that profit compare to the number of items sold? */
+
+SELECT TOP 10
+    r.RACE_NAME,
+    SUM(p.QUANTITY) AS TOTAL_ITEMS_SOLD,
+    SUM((m.PRICE - m.COST) * p.QUANTITY) AS TOTAL_PROFIT
+FROM MSIS3333_MAIN.MARATHON_DB.RACES r
+JOIN MSIS3333_MAIN.MARATHON_DB.MERCHANDISE m ON r.RACE_ID = m.RACE_ID
+JOIN MSIS3333_MAIN.MARATHON_DB.RUNNER_PURCHASES p ON m.PRODUCT_ID = p.PRODUCT_ID
+GROUP BY r.RACE_NAME
+ORDER BY TOTAL_PROFIT DESC;
+
+
+/*Elite Runner Demographics by State
+
+> Which states are producing the highest number of "Elite" finishers (finish time under 180 minutes), and what is the average finish time for these runners per state? */
+
+SELECT TOP 25
+    ru.RESIDENCE_STATE,
+    COUNT(DISTINCT ro.RUNNER_ID) AS ELITE_RUNNER_COUNT,
+    AVG(ro.FINISH_TIME) AS AVG_FINISH_TIME
+FROM MSIS3333_MAIN.MARATHON_DB.RUNNERS ru
+JOIN MSIS3333_MAIN.MARATHON_DB.RACE_ROSTER ro 
+    ON ru.RUNNER_ID = ro.RUNNER_ID
+JOIN MSIS3333_MAIN.MARATHON_DB.RACES r
+    ON ro.RACE_ID = r.RACE_ID
+WHERE ro.FINISH_TIME < 180 
+  AND r.DISTANCE = 'Marathon'
+  AND ru.RESIDENCE_COUNTRY != 'International'
+GROUP BY ru.RESIDENCE_STATE 
+HAVING COUNT(ro.RUNNER_ID) >= 3
+ORDER BY ELITE_RUNNER_COUNT DESC;
+
+
+/*Event Financial Efficiency (Revenue vs. Expenses)
+
+> For each race event, what was the Net Registration Income after subtracting all event expenses, and which events were the most financially efficient?*/
+
+WITH Event_Expenses AS (
+    SELECT EVENT_ID, SUM(EXPENSE_AMOUNT) AS TOTAL_EXPENSES
+    FROM MSIS3333_MAIN.MARATHON_DB.EXPENSES
+    GROUP BY EVENT_ID
+)
+SELECT 
+    e.EVENT_NAME,
+    SUM(r.REGISTRATION_FEE) AS GROSS_REG_REVENUE,
+    ROUND(ee.TOTAL_EXPENSES,2) AS TOTAL_EXPENSES,
+    ROUND((SUM(r.REGISTRATION_FEE) - ee.TOTAL_EXPENSES),2) AS NET_INCOME
+FROM MSIS3333_MAIN.MARATHON_DB.RACE_EVENTS e
+JOIN MSIS3333_MAIN.MARATHON_DB.RACES r ON e.EVENT_ID = r.RACE_EVENT_ID
+JOIN MSIS3333_MAIN.MARATHON_DB.RACE_ROSTER ro ON r.RACE_ID = ro.RACE_ID
+JOIN Event_Expenses ee ON e.EVENT_ID = ee.EVENT_ID
+GROUP BY e.EVENT_NAME, ee.TOTAL_EXPENSES
+ORDER BY NET_INCOME DESC;
