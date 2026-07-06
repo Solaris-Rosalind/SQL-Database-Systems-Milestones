@@ -79,8 +79,3 @@ These findings demonstrate how SQL-driven analysis can surface actionable busine
 ## Technologies Used
 - **Snowflake** — cloud data warehouse
 - **SQL** — DDL, DML, CTEs, window functions, aggregations, JOINs, subqueries
-
-## Context
-- Course: Database Systems Development (MSIS 3333), Oklahoma State University
-- Final Grade: A
-- Completed: Spring 2026
